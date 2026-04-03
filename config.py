@@ -1,0 +1,2 @@
+SEED = 42
+N_SAMPLES = 10000
