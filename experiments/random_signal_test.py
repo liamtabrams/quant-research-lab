@@ -1,20 +1,48 @@
 from data.data_loader import generate_random_price_series
-from features.signal_generator import random_signal
-from evaluation.metrics import compute_future_return, information_coefficient, sharpe_ratio
+from features.signal_generator import (
+    random_signal,
+    momentum_signal,
+    mean_reversion_signal,
+)
+from evaluation.metrics import (
+    compute_future_return,
+    information_coefficient,
+    sharpe_ratio,
+)
+
+
+def evaluate_signal(df, signal_func, name):
+    df = df.copy()
+
+    # Generate signal
+    df["signal"] = signal_func(df)
+
+    # Compute forward returns
+    df["future_return"] = compute_future_return(df)
+
+    # Drop NaNs to ensure proper alignment
+    df = df.dropna(subset=["signal", "future_return"])
+
+    # Compute IC
+    ic = information_coefficient(df["signal"], df["future_return"])
+
+    # Compute strategy returns (THIS is the important fix)
+    df["strategy_return"] = df["signal"] * df["future_return"]
+
+    sr = sharpe_ratio(df["strategy_return"])
+
+    print(f"=== {name} ===")
+    print(f"Information Coefficient: {ic:.5f}")
+    print(f"Sharpe Ratio: {sr:.5f}")
+    print()
 
 
 def run_experiment():
     df = generate_random_price_series()
 
-    df['signal'] = random_signal(df)
-    df['future_return'] = compute_future_return(df)
-
-    ic = information_coefficient(df['signal'], df['future_return'])
-    sr = sharpe_ratio(df['future_return'].dropna())
-
-    print("=== Random Signal Test ===")
-    print(f"Information Coefficient: {ic:.5f}")
-    print(f"Sharpe Ratio (baseline): {sr:.5f}")
+    evaluate_signal(df, random_signal, "Random Signal Test")
+    evaluate_signal(df, momentum_signal, "Momentum Signal Test")
+    evaluate_signal(df, mean_reversion_signal, "Mean Reversion Signal Test")
 
 
 if __name__ == "__main__":
