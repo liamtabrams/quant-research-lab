@@ -1,4 +1,8 @@
-from data.data_loader import generate_random_price_series
+from data.data_loader import (
+generate_random_price_series,
+generate_momentum_price_series,
+generate_mean_reverting_price_series,
+)
 from features.signal_generator import (
     random_signal,
     momentum_signal,
@@ -38,11 +42,31 @@ def evaluate_signal(df, signal_func, name):
 
 
 def run_experiment():
+
+    print("generating random walk price series data")
     df = generate_random_price_series()
 
     evaluate_signal(df, random_signal, "Random Signal Test")
     evaluate_signal(df, momentum_signal, "Momentum Signal Test")
     evaluate_signal(df, mean_reversion_signal, "Mean Reversion Signal Test")
+
+    print("generating random walk price series data with some momentum")
+
+    df = generate_momentum_price_series()
+
+    evaluate_signal(df, random_signal, "Random Signal Test")
+    evaluate_signal(df, momentum_signal, "Momentum Signal Test")
+    evaluate_signal(df, mean_reversion_signal, "Mean Reversion Signal Test")
+
+    print("generating random walk price series data with some mean reversion")
+
+    df = generate_mean_reverting_price_series()
+
+    evaluate_signal(df, random_signal, "Random Signal Test")
+    evaluate_signal(df, momentum_signal, "Momentum Signal Test")
+    evaluate_signal(df, mean_reversion_signal, "Mean Reversion Signal Test")
+
+
 
 
 if __name__ == "__main__":

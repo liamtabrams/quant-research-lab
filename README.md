@@ -123,4 +123,4 @@ quant_research/
 ├── config.py
 ├── data/
 ├── features/
-├── evaluati
+├── evaluation
